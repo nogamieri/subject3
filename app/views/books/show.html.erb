@@ -1,0 +1,68 @@
+<div class="container">
+	<div class="row">
+		<p id="notice">
+ 		<%= notice %>
+		</p>
+		<div class="col-xs-3">
+
+			<h2>User info</h2>
+			<%= render 'users/profile', user: @user %>
+
+			<h2>New book</h2>
+			<%= render 'books/newform', book: @book_new %>
+
+		</div>
+
+		<div class="col-xs-9">
+			<h2>Book detail</h2>
+
+			<table class="table">
+				<tr>
+					<td>
+						<%= link_to user_path(@book.user) do %>
+							<%= attachment_image_tag(@book.user, :profile_image, :fill, 100, 100, fallback: "no-image-mini.jpg") %><br>
+							<%= @user.name %>
+						<% end %>
+					</td>
+					<td><%= link_to @book.title, book_path(@book) %></td>
+					<td><%= @book.body %></td>
+
+					<td><%= link_to "Edit", edit_book_path(@book), class: "btn-sm btn-success edit_book_#{@book.id}" %></td>
+					<td><%= link_to "Destroy", book_path(@book), method: :delete, data: {confirm: "本当に削除してもよろしいですか？"}, class: "btn-sm btn-danger destroy_book_#{@book.id}" %></td>
+
+					<!-- ここから -->
+					<div id="favorites_buttons_<%= @book.id %>">
+						 <%= render partial: 'favorites/favorite', locals: {book: @book} %>
+					</div>
+					<!-- ここまで -->
+					<td>コメント数：<%= @book.post_comments.count %></td>
+
+				</tr>
+			</table>
+
+			<div>
+	  		<% @book.post_comments.each do |post_comment| %>
+	  	  <tr>
+	    		<td><%= attachment_image_tag(@book.user, :profile_image, :fill, 100, 100, fallback: "no-image-mini.jpg") %></td>
+					<td><%= post_comment.user.name %></td>
+				<% if post_comment.user == current_user %>
+		      <td>
+		        <%= link_to "Destroy", book_post_comment_path(post_comment.book, post_comment), method: :delete, class: "btn-sm btn-danger" %>
+		      </td>
+	    	<% end %>
+	    	</tr><br>
+				<tr><%= post_comment.comment %></tr><br>
+
+			  <% end %>
+			</div>
+
+			<div>
+				<%= form_for [@book, @post_comment] do |f| %>
+		      <%= f.text_area :comment, rows:'5', class: "form-control" %>
+				  <%= f.submit "送信" %>
+				<% end %>
+			</div>
+
+		</div>
+	</div>
+</div>
